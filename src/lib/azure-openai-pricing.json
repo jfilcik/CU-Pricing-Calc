@@ -1,0 +1,213 @@
+{
+  "currency": "USD",
+  "region": "eastus",
+  "context": "Public pay-as-you-go Standard, short context where differentiated; East US reference region, US Data Zone, and Global. Model prices are per 1,000,000 tokens; embedding prices are per 1,000 tokens.",
+  "retrievedAt": "2026-10-19T22:21:39Z",
+  "sources": [
+    "https://azure.microsoft.com/en-us/pricing/details/azure-openai/?currency=USD",
+    "https://prices.azure.com/api/retail/prices?$filter=serviceName%20eq%20%27Foundry%20Models%27%20and%20armRegionName%20eq%20%27eastus%27%20and%20productName%20eq%20%27Azure%20OpenAI%27%20and%20%28contains%28meterName%2C%20%27gpt%204.1%20nano%27%29%20or%20contains%28meterName%2C%20%27embedding%27%29%20or%20contains%28meterName%2C%20%27ada%27%29%29%20and%20priceType%20eq%20%27Consumption%27"
+  ],
+  "models": {
+    "gpt-6.1-luna": {
+      "global": { "input_per_mtok": null, "cached_input_per_mtok": null, "output_per_mtok": null },
+      "regional": { "input_per_mtok": null, "cached_input_per_mtok": null, "output_per_mtok": null },
+      "data_zone": { "input_per_mtok": null, "cached_input_per_mtok": null, "output_per_mtok": null }
+    },
+    "gpt-6.1-sol": {
+      "global": { "input_per_mtok": 2, "cached_input_per_mtok": 0.1, "output_per_mtok": 10 },
+      "regional": { "input_per_mtok": null, "cached_input_per_mtok": null, "output_per_mtok": null },
+      "data_zone": { "input_per_mtok": 2.2, "cached_input_per_mtok": 0.11, "output_per_mtok": 11 }
+    },
+    "gpt-6.1-astra": {
+      "global": { "input_per_mtok": null, "cached_input_per_mtok": null, "output_per_mtok": null },
+      "regional": { "input_per_mtok": null, "cached_input_per_mtok": null, "output_per_mtok": null },
+      "data_zone": { "input_per_mtok": null, "cached_input_per_mtok": null, "output_per_mtok": null }
+    },
+    "gpt-6-luna": {
+      "global": { "input_per_mtok": 0.1, "cached_input_per_mtok": 0.01, "output_per_mtok": 0.5 },
+      "regional": { "input_per_mtok": null, "cached_input_per_mtok": null, "output_per_mtok": null },
+      "data_zone": { "input_per_mtok": 0.11, "cached_input_per_mtok": 0.011, "output_per_mtok": 0.55 }
+    },
+    "gpt-6-sol": {
+      "global": { "input_per_mtok": 2, "cached_input_per_mtok": 0.2, "output_per_mtok": 10 },
+      "regional": { "input_per_mtok": null, "cached_input_per_mtok": null, "output_per_mtok": null },
+      "data_zone": { "input_per_mtok": 2.2, "cached_input_per_mtok": 0.22, "output_per_mtok": 11 }
+    },
+    "gpt-6-astra": {
+      "global": { "input_per_mtok": 10, "cached_input_per_mtok": 1, "output_per_mtok": 50 },
+      "regional": { "input_per_mtok": null, "cached_input_per_mtok": null, "output_per_mtok": null },
+      "data_zone": { "input_per_mtok": 11, "cached_input_per_mtok": 1.1, "output_per_mtok": 55 }
+    },
+    "gpt-5.6-tera": {
+      "global": { "input_per_mtok": 2, "cached_input_per_mtok": 0.2, "output_per_mtok": 12 },
+      "regional": { "input_per_mtok": null, "cached_input_per_mtok": null, "output_per_mtok": null },
+      "data_zone": { "input_per_mtok": 2.2, "cached_input_per_mtok": 0.22, "output_per_mtok": 13.2 }
+    },
+    "gpt-5.6-luna": {
+      "global": { "input_per_mtok": 0.2, "cached_input_per_mtok": 0.02, "output_per_mtok": 1.2 },
+      "regional": { "input_per_mtok": null, "cached_input_per_mtok": null, "output_per_mtok": null },
+      "data_zone": { "input_per_mtok": 0.22, "cached_input_per_mtok": 0.022, "output_per_mtok": 1.32 }
+    },
+    "gpt-5.6-sol": {
+      "global": { "input_per_mtok": 4, "cached_input_per_mtok": 0.4, "output_per_mtok": 20 },
+      "regional": { "input_per_mtok": null, "cached_input_per_mtok": null, "output_per_mtok": null },
+      "data_zone": { "input_per_mtok": 4.4, "cached_input_per_mtok": 0.44, "output_per_mtok": 22 }
+    },
+    "gpt-5.5": {
+      "global": { "input_per_mtok": 5, "cached_input_per_mtok": 0.5, "output_per_mtok": 30 },
+      "regional": { "input_per_mtok": null, "cached_input_per_mtok": null, "output_per_mtok": null },
+      "data_zone": { "input_per_mtok": 5.5, "cached_input_per_mtok": 0.55, "output_per_mtok": 33 }
+    },
+    "gpt-5.4": {
+      "global": { "input_per_mtok": 2.5, "cached_input_per_mtok": 0.25, "output_per_mtok": 15 },
+      "regional": { "input_per_mtok": null, "cached_input_per_mtok": null, "output_per_mtok": null },
+      "data_zone": { "input_per_mtok": 2.75, "cached_input_per_mtok": 0.275, "output_per_mtok": 16.5 }
+    },
+    "gpt-5.4-mini": {
+      "global": { "input_per_mtok": 0.75, "cached_input_per_mtok": 0.075, "output_per_mtok": 4.5 },
+      "regional": { "input_per_mtok": null, "cached_input_per_mtok": null, "output_per_mtok": null },
+      "data_zone": { "input_per_mtok": 0.825, "cached_input_per_mtok": 0.0825, "output_per_mtok": 4.95 }
+    },
+    "gpt-5.2": {
+      "global": { "input_per_mtok": 1.75, "cached_input_per_mtok": 0.175, "output_per_mtok": 14 },
+      "regional": { "input_per_mtok": null, "cached_input_per_mtok": null, "output_per_mtok": null },
+      "data_zone": { "input_per_mtok": 1.925, "cached_input_per_mtok": 0.1925, "output_per_mtok": 15.4 }
+    },
+    "gpt-5.1": {
+      "global": { "input_per_mtok": 1.25, "cached_input_per_mtok": 0.125, "output_per_mtok": 10 },
+      "regional": { "input_per_mtok": null, "cached_input_per_mtok": null, "output_per_mtok": null },
+      "data_zone": { "input_per_mtok": 1.375, "cached_input_per_mtok": 0.1375, "output_per_mtok": 11 }
+    },
+    "gpt-5": {
+      "global": { "input_per_mtok": 1.25, "cached_input_per_mtok": 0.125, "output_per_mtok": 10 },
+      "regional": { "input_per_mtok": null, "cached_input_per_mtok": null, "output_per_mtok": null },
+      "data_zone": { "input_per_mtok": 1.375, "cached_input_per_mtok": 0.1375, "output_per_mtok": 11 }
+    },
+    "gpt-5-mini": {
+      "global": { "input_per_mtok": 0.25, "cached_input_per_mtok": 0.025, "output_per_mtok": 2 },
+      "regional": { "input_per_mtok": null, "cached_input_per_mtok": null, "output_per_mtok": null },
+      "data_zone": { "input_per_mtok": 0.275, "cached_input_per_mtok": 0.0275, "output_per_mtok": 2.2 }
+    },
+    "gpt-5-nano": {
+      "global": { "input_per_mtok": 0.05, "cached_input_per_mtok": 0.005, "output_per_mtok": 0.4 },
+      "regional": { "input_per_mtok": null, "cached_input_per_mtok": null, "output_per_mtok": null },
+      "data_zone": { "input_per_mtok": 0.055, "cached_input_per_mtok": 0.0055, "output_per_mtok": 0.44 }
+    },
+    "gpt-4o-2024-11-20": {
+      "global": { "input_per_mtok": 2.5, "cached_input_per_mtok": 1.25, "output_per_mtok": 10 },
+      "regional": { "input_per_mtok": 2.75, "cached_input_per_mtok": 1.375, "output_per_mtok": 11 },
+      "data_zone": { "input_per_mtok": 2.75, "cached_input_per_mtok": 1.375, "output_per_mtok": 11 }
+    },
+    "gpt-4o-2024-08-06": {
+      "global": { "input_per_mtok": 2.5, "cached_input_per_mtok": 1.25, "output_per_mtok": 10 },
+      "regional": { "input_per_mtok": 2.75, "cached_input_per_mtok": 1.375, "output_per_mtok": 11 },
+      "data_zone": { "input_per_mtok": 2.75, "cached_input_per_mtok": 1.375, "output_per_mtok": 11 }
+    },
+    "gpt-4o": {
+      "global": { "input_per_mtok": 2.5, "cached_input_per_mtok": 1.25, "output_per_mtok": 10 },
+      "regional": { "input_per_mtok": 2.75, "cached_input_per_mtok": 1.375, "output_per_mtok": 11 },
+      "data_zone": { "input_per_mtok": 2.75, "cached_input_per_mtok": 1.375, "output_per_mtok": 11 }
+    },
+    "gpt-4o-mini": {
+      "global": { "input_per_mtok": 0.15, "cached_input_per_mtok": 0.075, "output_per_mtok": 0.6 },
+      "regional": { "input_per_mtok": 0.165, "cached_input_per_mtok": 0.083, "output_per_mtok": 0.66 },
+      "data_zone": { "input_per_mtok": 0.165, "cached_input_per_mtok": 0.083, "output_per_mtok": 0.66 }
+    },
+    "gpt-4.1": {
+      "global": { "input_per_mtok": 2, "cached_input_per_mtok": 0.5, "output_per_mtok": 8 },
+      "regional": { "input_per_mtok": 2.2, "cached_input_per_mtok": 0.55, "output_per_mtok": 8.8 },
+      "data_zone": { "input_per_mtok": 2.2, "cached_input_per_mtok": 0.55, "output_per_mtok": 8.8 }
+    },
+    "gpt-4.1-mini": {
+      "global": { "input_per_mtok": 0.4, "cached_input_per_mtok": 0.1, "output_per_mtok": 1.6 },
+      "regional": { "input_per_mtok": 0.44, "cached_input_per_mtok": 0.11, "output_per_mtok": 1.76 },
+      "data_zone": { "input_per_mtok": 0.44, "cached_input_per_mtok": 0.11, "output_per_mtok": 1.76 }
+    },
+    "gpt-4.1-nano": {
+      "global": { "input_per_mtok": 0.1, "cached_input_per_mtok": 0.025, "output_per_mtok": 0.4 },
+      "regional": { "input_per_mtok": 0.11, "cached_input_per_mtok": 0.028, "output_per_mtok": 0.44 },
+      "data_zone": { "input_per_mtok": 0.11, "cached_input_per_mtok": 0.028, "output_per_mtok": 0.44 }
+    }
+  },
+  "embeddings": {
+    "text-embedding-3-small": {
+      "price_per_1k_tokens": 0.000022,
+      "pricing": { "global": 0.00002, "regional": 0.000022, "data_zone": 0.000022 }
+    },
+    "text-embedding-3-large": {
+      "price_per_1k_tokens": 0.000143,
+      "pricing": { "global": 0.00013, "regional": 0.000143, "data_zone": 0.000143 }
+    },
+    "text-embedding-ada-002": {
+      "price_per_1k_tokens": 0.00011,
+      "pricing": { "global": 0.0001, "regional": 0.00011, "data_zone": 0.00011 }
+    }
+  },
+  "sourceMapping": {
+    "extraction": "ACOM pricing HTML embeds machine-readable data-amount JSON on price-data spans. Read the regional.us-east amount in the first pricing column, not the rendered $- placeholder. The page declares USD as its default currency with conversion 1.0.",
+    "deploymentRows": {
+      "global": "Global",
+      "regional": "Regional",
+      "data_zone": "Data Zone or US/EU Data Zones, using the us-east amount for the US zone"
+    },
+    "modelRowPrefixes": {
+      "gpt-6.1-luna": null,
+      "gpt-6.1-sol": "GPT-6.1 Sol (short context)",
+      "gpt-6.1-astra": null,
+      "gpt-6-luna": "GPT-6 Luna (short context)",
+      "gpt-6-sol": "GPT-6 Sol (short context)",
+      "gpt-6-astra": "GPT-6 Astra (short context)",
+      "gpt-5.6-tera": "GPT-5.6-terra (short context)",
+      "gpt-5.6-luna": "GPT-5.6-luna (short context)",
+      "gpt-5.6-sol": "GPT-5.6-sol (short context)",
+      "gpt-5.5": "GPT-5.5",
+      "gpt-5.4": "GPT-5.4 (<272k context length)",
+      "gpt-5.4-mini": "GPT-5.4 mini",
+      "gpt-5.2": "GPT-5.2",
+      "gpt-5.1": "GPT-5.1",
+      "gpt-5": "GPT-5 2025-08-07 (Global); GPT-5 (Data Zone)",
+      "gpt-5-mini": "GPT-5-mini",
+      "gpt-5-nano": "GPT-5-nano",
+      "gpt-4o-2024-11-20": "GPT-4o-2024-1120",
+      "gpt-4o-2024-08-06": "GPT-4o-2024-08-06",
+      "gpt-4o": "GPT-4o-2024-1120",
+      "gpt-4o-mini": "GPT-4o-mini-0718",
+      "gpt-4.1": "GPT-4.1-2025-04-14",
+      "gpt-4.1-mini": "GPT-4.1-mini-2025-04-14",
+      "gpt-4.1-nano": "GPT-4.1-nano-2025-04-14"
+    },
+    "embeddingRows": {
+      "text-embedding-3-small": "text-embedding-3-small",
+      "text-embedding-3-large": "text-embedding-3-large",
+      "text-embedding-ada-002": "Ada"
+    },
+    "embeddingRetailMeters": {
+      "text-embedding-3-small": "text-embedding-3-small-regional Tokens",
+      "text-embedding-3-large": "text-embedding-3-large-regional Tokens",
+      "text-embedding-ada-002": "embedding-ada-regional Tokens"
+    },
+    "embeddingGlobalRetailMeters": {
+      "text-embedding-3-small": "text-embedding-3-small-glbl Tokens",
+      "text-embedding-3-large": "text-embedding-3-large-glbl Tokens",
+      "text-embedding-ada-002": "embedding-ada-glbl Tokens"
+    },
+    "embeddingDataZoneRows": {
+      "text-embedding-3-small": "text-embedding-3-small DataZone",
+      "text-embedding-3-large": "text-embedding-3-large DataZone",
+      "text-embedding-ada-002": "Ada DataZone"
+    }
+  },
+  "notes": [
+    "Every numeric model price is copied from the official public Azure page's embedded data-amount JSON, not inferred from a percentage uplift or taken from OpenAI direct API pricing. Embedding rates and GPT-4.1-nano rates were additionally checked against the public Azure Retail Prices API, whose serviceName is Foundry Models and productName is Azure OpenAI.",
+    "Null means an exact applicable public Standard token price was not verified; it does not mean free or definitive deployment unavailability. GPT-6.1-luna and GPT-6.1-astra were not listed in the page's token pricing tables. Regional prices for all GPT-5 and GPT-6 family entries remain null; regional PTU rows do not establish regional Standard token prices.",
+    "The existing gpt-5.6-tera key is deliberately retained as an alias of the public Azure spelling GPT-5.6-terra; its rates come only from the explicitly mapped terra short-context rows.",
+    "Unversioned gpt-4o is explicitly pinned to the documented 2024-11-20 pricing rows for this snapshot, not a claim that every GPT-4o version costs the same. The separate 2024-08-06 entry uses its own rows. The older 2024-05-13 version has different prices and is not represented by the unversioned key.",
+    "Unversioned GPT-4.1, mini, and nano use the documented 2025-04-14 rows; gpt-4o-mini uses the page's 0718 rows. GPT-5 Global is explicitly documented as 2025-08-07; its Data Zone row is labeled GPT-5 without a version.",
+    "Only the first Standard/pay-as-you-go pricing column is used. Flex, Priority, Batch, fine-tuning, long-context tiers, provisioned throughput/PTU, reservations, negotiated discounts, taxes, and currency conversions are excluded.",
+    "For GPT-6.1, GPT-6, and GPT-5.6, short-context rows are selected. GPT-5.4 uses the explicitly documented <272k context-length rows. GPT-5.5 uses its ordinary rows, not its separate Long Context rows. No undocumented short/long threshold is assumed.",
+    "GPT-6.1, GPT-6, and GPT-5.6 publish separate cache-write prices. Those are intentionally omitted because the current calculator only represents input, cached input, and output; cache writes are not folded into another category.",
+    "Public ACOM and Retail meters explicitly quote cached-input prices of 0.028 USD per million for GPT-4.1-nano Regional/Data Zone. ACOM explicitly quotes 0.083 for GPT-4o-mini Regional/Data Zone. These published values are retained rather than recomputed from a theoretical discount.",
+    "Each embedding's legacy price_per_1k_tokens field deliberately retains the East US Regional Standard rate, matching the page's unsuffixed embedding row. For deployment-aware calculations use pricing.global, pricing.regional, or pricing.data_zone instead; every value is USD per 1,000 tokens. Global rates are from the mapped public Retail meters, Regional rates match both Retail meters and ACOM rows, and US Data Zone rates are from the mapped ACOM DataZone rows using regional.us-east. Equal Regional and Data Zone values are explicitly published, not extrapolated.",
+    "The page's Ada row is mapped to text-embedding-ada-002 using the corresponding embedding-ada-regional Tokens meter. The page does not explicitly label an Ada version; verify the actual deployment's model/version before relying on this alias."
+  ]
+}

@@ -1,0 +1,47 @@
+[
+  {
+    "file_name": "invoice_2024_Q1.pdf",
+    "file_type": "document",
+    "pages": 45,
+    "actual_input_tokens": 117000,
+    "actual_output_tokens": 4050,
+    "model_name": "gpt-4o",
+    "deployment_type": "global"
+  },
+  {
+    "file_name": "contract_vendor_agreement.pdf",
+    "file_type": "document",
+    "pages": 120,
+    "actual_input_tokens": 312000,
+    "actual_output_tokens": 10800,
+    "model_name": "gpt-4o",
+    "deployment_type": "global"
+  },
+  {
+    "file_name": "receipt_scan_001.pdf",
+    "file_type": "document",
+    "pages": 2,
+    "actual_input_tokens": 5200,
+    "actual_output_tokens": 180,
+    "model_name": "gpt-4o-mini",
+    "deployment_type": "regional"
+  },
+  {
+    "file_name": "financial_report_2024.pdf",
+    "file_type": "document",
+    "pages": 85,
+    "actual_input_tokens": 221000,
+    "actual_output_tokens": 7650,
+    "model_name": "gpt-4o",
+    "deployment_type": "data_zone"
+  },
+  {
+    "file_name": "user_manual_v2.pdf",
+    "file_type": "document",
+    "pages": 150,
+    "actual_input_tokens": 390000,
+    "actual_output_tokens": 13500,
+    "model_name": "gpt-4o-mini",
+    "deployment_type": "global"
+  }
+]
