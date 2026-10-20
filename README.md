@@ -2,6 +2,8 @@
 
 A web calculator and Python estimator for Azure Content Understanding. Document Intelligence pricing is out of scope.
 
+For current rates, rely directly on the [Azure Content Understanding pricing page](https://azure.microsoft.com/en-us/pricing/details/content-understanding/) and [Azure OpenAI pricing page](https://azure.microsoft.com/en-us/pricing/details/azure-openai/), rather than this calculator's saved pricing snapshot. For how charges are calculated, see [Pricing for Azure Content Understanding in Foundry Tools](https://learn.microsoft.com/en-us/azure/ai-services/content-understanding/pricing-explainer).
+
 ## Content Understanding rates
 
 Service pricing information is available on the [Azure Content Understanding pricing page](https://azure.microsoft.com/en-us/pricing/details/content-understanding/).
@@ -16,6 +18,8 @@ Service pricing information is available on the [Azure Content Understanding pri
 | Video | $1 / hour |
 
 **Sync is content extraction only.** The processing-mode selector offers **Sync** and **Async**. Both modes have separate Basic (Read) and Standard (Layout) volumes, with mode-specific rates. Sync disables field extraction and excludes model tokens, embeddings, and contextualization from the estimate. Switching back to Async restores the previous field extraction preference.
+
+Sync supports **Document and Text only**; its file-type selector excludes Image, Audio, and Video. Async supports all five file types. Image, Audio, and Video cannot select Sync; any previously saved incompatible media/Sync combination is shown in Async mode.
 
 Async field extraction adds model usage, document embeddings, and contextualization:
 
@@ -54,7 +58,7 @@ Cached input must not exceed total input. Caching does not discount embedding to
 
 ## Measured invoice defaults
 
-`src/lib/invoice-token-defaults.json` stores actual `prebuilt-invoice` usage from three runs per measured model on one [public Microsoft sample invoice](https://github.com/Azure-Samples/azure-ai-content-understanding-python/raw/refs/heads/main/data/invoice.pdf). Document defaults use page-weighted means for input, output, cached input, contextualization, and billed embedding tokens. The snapshot retains raw usage counters, sample SHA-256, and per-model API version, region, measurement date, and coverage; it contains no extracted invoice content or credentials.
+`src/lib/invoice-token-defaults.json` stores actual `prebuilt-invoice` usage from three runs per measured model on one [public Microsoft sample invoice](https://github.com/Azure-Samples/azure-ai-content-understanding-python/raw/refs/heads/main/data/invoice.pdf). Document defaults use page-weighted means for input, output, contextualization, and billed embedding tokens. **The web calculator defaults cached input to zero for every model, including after resetting estimates.** Enter your own cached-token estimate to model caching. The snapshot retains measured cached input as historical evidence, not as the web default, along with raw usage counters, sample SHA-256, and per-model API version, region, measurement date, and coverage; it contains no extracted invoice content or credentials.
 
 Support depends on the region and API version. Five models were measured in East US 2 using GA API `2025-11-01`: GPT-4.1, GPT-5.1, GPT-5.2, GPT-5.4, and GPT-5.5. **South Central US with `2026-06-01-preview` adds measured GPT-5.6 Terra/Luna/Sol and GPT-6 Luna/Sol/Astra defaults**, using existing deployments without changing their configuration. The calculator retains the requested `gpt-5.6-tera` spelling as an alias for Terra.
 
@@ -98,14 +102,14 @@ The runner uses Azure CLI authentication and an in-memory account key. It uses r
 
 ## Web calculator
 
-The web experience follows the [Azure pricing calculator](https://azure.microsoft.com/en-us/pricing/calculator/?service=content-understanding) layout.
+The web experience provides a single-page estimate with inline quantities, rates, and cost breakdowns.
 
 - A single scrolling estimate shows content extraction, optional field extraction, model usage, document-only embeddings, contextualization, and a generated configuration summary.
 - Documents have independent **Basic (Read)** and **Standard (Layout)** quantities in both Sync and Async processing modes. Their sum drives the total content volume; switching modes preserves the volumes and changes their rates. Minimal is no longer offered in the UI; saved Minimal allocations are excluded with a notice to reallocate them. The Python estimator retains its imported Basic/Standard modes.
 - New visitors start with **gpt-6.1-sol** using **Global** deployment. Previously saved model and deployment selections are retained.
-- Document and text quantities are entered in thousands of pages, images in thousands of images, and audio/video in minutes. Existing saved quantities are converted for display without changing their underlying units. Text uses 3,000 UTF-16 characters per page and retains the imported one-context-token-per-character assumption.
+- Document and text volumes use **actual page counts**, defaulting to **1,000 pages**. Basic and Standard inputs and field extraction volumes also use actual pages; extraction rates remain displayed per 1,000 pages. Existing saved quantities retain their actual page counts. Images use thousands of images, and audio/video use minutes. Text uses 3,000 UTF-16 characters per page and retains the imported one-context-token-per-character assumption.
 - Field extraction defaults to the content extraction volume but can be lowered independently. It scales model, embedding, and context usage without charging for content extraction twice. Its volume cannot exceed the content volume; exceeding it highlights the input with an inline error and suppresses totals until corrected.
-- Volume controls accept 0 through 10,000,000 billing units; combined document tiers must also stay within that range. Invalid quantities suppress totals instead of silently clamping inputs.
+- Volume controls accept 0 through 10,000,000 displayed units (actual pages for documents/text); combined document tiers must also stay within that range. Invalid quantities suppress totals instead of silently clamping inputs.
 - Region displays the snapshot's **East US reference rates** and is intentionally read-only: no live regional pricing or currency conversion is implied. Global, Regional, Data Zone, and PTU deployment behavior, measured invoice defaults, caching, and custom rate overrides are preserved.
 
 Upfront cost is zero. Monthly totals include all configured components; missing rates show an incomplete known subtotal, not a complete quote. Model-rate overrides live under **Model pricing advanced settings - caching and pricing**. Collapsing field extraction settings does not turn off its charges.

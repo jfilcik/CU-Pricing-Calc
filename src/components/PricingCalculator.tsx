@@ -21,10 +21,10 @@ const MAX_VOLUME = 10000000;
 const billingUnitFormatter = new Intl.NumberFormat('en-US', { maximumFractionDigits: 12 });
 const documentTiers = ['basic', 'standard'] as const;
 const volumeScales: Record<FileType, number> = {
-  document: 1000, text: 3000000, image: 1000, audio: 1, video: 1
+  document: 1, text: 3000, image: 1000, audio: 1, video: 1
 };
 const volumeUnits: Record<FileType, string> = {
-  document: '1,000 pages', text: '1,000 pages', image: '1,000 images', audio: 'minute', video: 'minute'
+  document: 'pages', text: 'pages', image: '1,000 images', audio: 'minute', video: 'minute'
 };
 
 function NumberField({ id, label, value, onChange, placeholder, max, readOnly, unit, error }: {
@@ -90,8 +90,10 @@ export default function PricingCalculator() {
   const deploymentType = storedDeployment ?? 'global';
   const documentMode = storedMode === 'minimal' ? 'standard' : storedMode ?? 'standard';
   const contextualizationType = storedContext ?? 'standard';
-  const processingMode = storedProcessingMode ?? 'async';
-  const sync = fileType === 'document' && processingMode === 'sync';
+  const supportsSync = fileType === 'document' || fileType === 'text';
+  const processingMode = supportsSync ? storedProcessingMode ?? 'async' : 'async';
+  const sync = processingMode === 'sync';
+  const availableFileTypes: FileType[] = sync ? ['document', 'text'] : ['document', 'text', 'image', 'audio', 'video'];
   const basicDefault = documentMode === 'basic' || documentMode === 'basic_sync';
   const documentQuantities = {
     minimal: 0,
@@ -129,7 +131,7 @@ export default function PricingCalculator() {
       fileType, quantity, modelName, deploymentType, documentMode, processingMode, contextualizationType,
       documentQuantities: fileType === 'document' ? documentQuantities : undefined,
       fieldQuantity, fieldExtractionEnabled, customInputTokens: estimate.input,
-      customCachedInputTokens: estimate.cached, customOutputTokens: estimate.output,
+      customCachedInputTokens: estimate.cached ?? 0, customOutputTokens: estimate.output,
       tokenPricing: overrides, embeddingsEnabled: fileType === 'document', embeddingsModel,
       embeddingsTokensPerCall: estimate.embeddings
     });
@@ -152,15 +154,17 @@ export default function PricingCalculator() {
     });
   };
   const updateTier = (tier: DocumentTier, value: number | undefined) => {
-    const updated = { ...documentQuantities, [tier]: (value ?? 0) * 1000 };
+    const updated = { ...documentQuantities, [tier]: value ?? 0 };
     setDocumentQuantities(updated);
     setQuantity(documentTiers.reduce((sum, key) => sum + updated[key], 0));
   };
   const monthlyCost = results?.total == null ? 'Incomplete estimate' : formatCurrency(results.total);
-  const description = `${fileTypeLabels[fileType]} file type, ${formatNumber(quantity / scale)} x ${volumeUnits[fileType]} of input. ` +
-    (fileType === 'document' ? `${sync ? 'Sync' : 'Async'} processing: ${formatNumber(documentQuantities.basic / 1000)} x 1,000 Basic (Read) pages and ${formatNumber(documentQuantities.standard / 1000)} x 1,000 Standard (Layout) pages. ` : '') +
+  const volumeUnit = `${fileType === 'image' ? 'x ' : ''}${volumeUnits[fileType]}`;
+  const description = `${fileTypeLabels[fileType]} file type, ${formatNumber(quantity / scale)} ${volumeUnit} of input. ` +
+    (fileType === 'document' ? `${sync ? 'Sync' : 'Async'} processing: ${formatNumber(documentQuantities.basic)} Basic (Read) pages and ${formatNumber(documentQuantities.standard)} Standard (Layout) pages. `
+      : `${sync ? 'Sync' : 'Async'} processing. `) +
     (fieldExtractionEnabled
-      ? `Field extraction enabled for ${formatNumber(fieldQuantity / scale)} x ${volumeUnits[fileType]} using ${deploymentTypeLabels[deploymentType]} ${modelName}, ` +
+      ? `Field extraction enabled for ${formatNumber(fieldQuantity / scale)} ${volumeUnit} using ${deploymentTypeLabels[deploymentType]} ${modelName}, ` +
         `${formatNumber(estimate.input ?? defaultTokens?.in ?? 0)} input and ${formatNumber(estimate.output ?? defaultTokens?.out ?? 0)} output tokens per ${perUnitLabel}` +
         `${fileType === 'document' ? `, with ${embeddingsModel} embeddings` : ''}.`
       : `Field extraction disabled${sync ? ' (synchronous content extraction only)' : ''}.`);
@@ -222,20 +226,21 @@ export default function PricingCalculator() {
                   setQuantity(value === 'text' ? 3000000 : value === 'audio' || value === 'video' ? 60 : 1000);
                 }}>
                   <SelectTrigger id="file-type"><SelectValue /></SelectTrigger>
-                  <SelectContent>{(['document', 'text', 'image', 'audio', 'video'] as const).map(key =>
+                  <SelectContent>{availableFileTypes.map(key =>
                     <SelectItem key={key} value={key}>{fileTypeLabels[key]}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
-              {fileType === 'document' && <div className="calc-field">
+              <div className="calc-field">
                 <Label htmlFor="document-mode">Processing mode</Label>
                 <Select value={processingMode} onValueChange={(value: ProcessingMode) => setProcessingMode(value)}>
                   <SelectTrigger id="document-mode"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="async">Async</SelectItem>
-                    <SelectItem value="sync">Sync</SelectItem>
+                    <SelectItem value="sync" disabled={!supportsSync}>Sync</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>}
+                <span className="calc-help">Sync supports Document and Text only.</span>
+              </div>
             </div>
             <p className="calc-help">Reference pricing in USD, not a live regional quote. Pricing may differ in other regions.</p>
 
@@ -243,7 +248,7 @@ export default function PricingCalculator() {
               <h2 id="workload-heading">Content Understanding for {fileTypeLabels[fileType]}</h2>
               <div className="calc-volume">
                 <NumberField id="quantity" label="Monthly content extraction volume"
-                  value={quantity / scale} max={MAX_VOLUME} unit={`x ${volumeUnits[fileType]}`}
+                  value={quantity / scale} max={MAX_VOLUME} unit={volumeUnit}
                   readOnly={fileType === 'document'}
                   onChange={value => setQuantity((value ?? 0) * scale)} />
                 <p className="calc-help">{fileType === 'document'
@@ -266,12 +271,12 @@ export default function PricingCalculator() {
                 <PricingRow key={tier} label={tier.charAt(0).toUpperCase() + tier.slice(1)}
                   subtext={tier === 'basic' ? 'Read' : 'Layout'}
                   quantity={<NumberField id={`volume-${tier}`} label={`${tier.charAt(0).toUpperCase() + tier.slice(1)} volume`}
-                    value={documentQuantities[tier] / 1000} max={MAX_VOLUME}
-                    unit="x 1,000 pages" onChange={value => updateTier(tier, value)} />}
+                    value={documentQuantities[tier]} max={MAX_VOLUME}
+                    unit="pages" onChange={value => updateTier(tier, value)} />}
                   rate={<>{formatCurrencyPrecise(getDocumentExtractionRate(tier, processingMode))}<small>per 1,000 pages</small></>}
                   cost={results ? documentQuantities[tier] / 1000 * getDocumentExtractionRate(tier, processingMode) : undefined} />
               ) : <PricingRow label={fileTypeLabels[fileType]}
-                quantity={<>{formatNumber(quantity / scale)}<small>x {volumeUnits[fileType]}</small></>}
+                quantity={<>{formatNumber(quantity / scale)}<small>{volumeUnit}</small></>}
                 rate={<>{formatCurrencyPrecise(fileType === 'audio' ? pricingConfig.ce.audio_per_minute
                   : fileType === 'video' ? pricingConfig.ce.video_per_minute : 0)}
                   <small>per {volumeUnits[fileType]}</small></>}
@@ -286,7 +291,7 @@ export default function PricingCalculator() {
                   checked={fieldExtractionEnabled} disabled={sync} onCheckedChange={setFieldExtractionEnabled} />
                   <Label htmlFor="field-enabled">Enable field extraction</Label></div>
               </div>
-              <p className="calc-help">{sync ? 'Unavailable for synchronous document extraction.'
+              <p className="calc-help">{sync ? 'Unavailable for synchronous content extraction.'
                 : 'Field extraction encompasses generative model usage, embeddings, and contextualization components.'}</p>
 
               {fieldExtractionEnabled && <>
@@ -298,7 +303,7 @@ export default function PricingCalculator() {
                 <div id="field-details" hidden={!expanded}>
                   <div className="calc-volume">
                     <NumberField id="field-quantity" label="Monthly field extraction volume" value={fieldQuantity / scale}
-                      max={Math.min(MAX_VOLUME, quantity / scale)} unit={`x ${volumeUnits[fileType]}`}
+                      max={Math.min(MAX_VOLUME, quantity / scale)} unit={volumeUnit}
                       error={fieldVolumeError}
                       onChange={value => setFieldQuantities(previous => ({ ...previous, [fileType]: (value ?? 0) * scale }))} />
                     <p className="calc-help">Use a lower volume if only some of your content needs field extraction. This does not add another content extraction charge.</p>
@@ -325,7 +330,7 @@ export default function PricingCalculator() {
                       <div><h5>Input</h5><NumberField id="input-tokens" label={`Total input tokens / ${perUnitLabel}`}
                         value={estimate.input ?? defaultTokens?.in} onChange={value => updateEstimate('input', value)} /></div>
                       <div><h5>Cached input</h5><NumberField id="cached-tokens" label={`Cached input tokens / ${perUnitLabel}`}
-                        value={estimate.cached ?? defaultTokens?.cached_input ?? 0} onChange={value => updateEstimate('cached', value)} /></div>
+                        value={estimate.cached ?? 0} onChange={value => updateEstimate('cached', value)} /></div>
                       <div><h5>Output</h5><NumberField id="output-tokens" label={`Output tokens / ${perUnitLabel}`}
                         value={estimate.output ?? defaultTokens?.out} onChange={value => updateEstimate('output', value)} /></div>
                     </div>
@@ -337,8 +342,7 @@ export default function PricingCalculator() {
                         {' '}<a href={invoiceBenchmark.sampleUrl} target="_blank" rel="noreferrer">public sample invoice</a>
                         {' '}on {(benchmark.measuredAt ?? invoiceBenchmark.measuredAt).slice(0, 10)}
                         {benchmark.region && ` in ${benchmark.region}`}{benchmark.apiVersion && ` using API ${benchmark.apiVersion}`}.
-                        {' '}These are per-page averages, not a representative invoice corpus. Cached-token averages reflect repeated runs of the same invoice, not a guaranteed cache hit rate for new invoices.
-                        {benchmark.perPage?.cached_input == null && ' The API did not consistently report cached-input counts across all runs; zero cached tokens remains an assumption.'}
+                        {' '}These are per-page averages, not a representative invoice corpus. Cached input defaults to zero; repeated invoice runs do not establish a guaranteed cache hit rate for new invoices.
                       </p> : <p>
                         Token defaults are heuristic estimates, not measured invoice usage.
                         {benchmark?.reason && ` Invoice benchmark unavailable: ${benchmark.reason}.`}
@@ -452,7 +456,8 @@ export default function PricingCalculator() {
         </section>
         <p className="calc-disclaimer">USD estimates, excluding taxes. Model and embedding charges are billed through your configured Foundry deployments.
           {' '}Document Intelligence is not included. This standalone calculator is not connected to your Azure agreement.
-          {' '}<a href="https://azure.microsoft.com/en-us/pricing/calculator/?service=content-understanding" target="_blank" rel="noreferrer">Open the Azure pricing calculator <ExternalLink size={12} /></a></p>
+          {' '}Refer to the <a href="https://azure.microsoft.com/en-us/pricing/details/content-understanding/" target="_blank" rel="noreferrer">Content Understanding pricing page <ExternalLink size={12} /></a>
+          {' '}and <a href="https://azure.microsoft.com/en-us/pricing/details/azure-openai/" target="_blank" rel="noreferrer">Azure OpenAI pricing page <ExternalLink size={12} /></a> for current rates.</p>
       </main>
       <footer className="calc-page-footer"><div className="calc-container">Azure Content Understanding <span>Pricing estimates for planning purposes</span></div></footer>
     </div>

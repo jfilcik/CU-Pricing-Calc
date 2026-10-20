@@ -112,8 +112,10 @@ export function calculatePricing(inputs: CalculationInputs): CalculationResults 
   const contextualizationType = inputs.contextualizationType ?? 'standard';
   const processingMode = inputs.processingMode ?? (isSyncMode(documentMode) ? 'sync' : 'async');
   if (processingMode !== 'sync' && processingMode !== 'async') throw new Error('Unknown processing mode');
-  const enabled = inputs.fieldExtractionEnabled !== false &&
-    !(fileType === 'document' && processingMode === 'sync');
+  if (processingMode === 'sync' && fileType !== 'document' && fileType !== 'text') {
+    throw new Error('Sync processing supports Document and Text only');
+  }
+  const enabled = inputs.fieldExtractionEnabled !== false && processingMode !== 'sync';
   const fieldValues = enabled ? {
     fieldQuantity: inputs.fieldQuantity,
     inputTokens: inputs.customInputTokens, outputTokens: inputs.customOutputTokens,

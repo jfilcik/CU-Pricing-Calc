@@ -249,4 +249,19 @@ describe('Content Understanding pricing', () => {
     expect(calculatePricing({ ...inputs, documentMode: 'basic_sync', processingMode: 'async', fieldExtractionEnabled: false }).ce.cost).toBe(1);
     expect(calculatePricing({ ...inputs, documentMode: 'standard', processingMode: 'sync' }).total).toBe(7.5);
   });
+
+  it.each(['image', 'audio', 'video'] as const)('rejects unsupported Sync %s calculations', fileType => {
+    expect(() => calculatePricing({ ...inputs, fileType, processingMode: 'sync' })).toThrow('Document and Text only');
+  });
+
+  it('supports Text in Sync without field extraction charges', () => {
+    const result = calculatePricing({
+      ...inputs, fileType: 'text', quantity: 3000000, processingMode: 'sync',
+      embeddingsEnabled: true, modelName: 'unknown'
+    });
+    expect(result.total).toBe(0);
+    expect(result.fe.totalTokens).toBe(0);
+    expect(result.ctx.tokens).toBe(0);
+    expect(result.embeddings.totalTokens).toBe(0);
+  });
 });

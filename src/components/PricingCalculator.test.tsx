@@ -75,14 +75,15 @@ describe('Pricing calculator UI', () => {
     const measured = invoiceBenchmark.models['gpt-4.1'].perPage!;
     expect(screen.getByText(/Document defaults measured using prebuilt-invoice/)).toBeTruthy();
     expect((screen.getByLabelText('Total input tokens / page') as HTMLInputElement).value).toBe(String(measured.input));
-    expect((screen.getByLabelText('Cached input tokens / page') as HTMLInputElement).value).toBe(String(measured.cached_input));
+    expect((screen.getByLabelText('Cached input tokens / page') as HTMLInputElement).value).toBe('0');
     const embeddings = screen.getByLabelText('Embedding tokens / page') as HTMLInputElement;
     expect(embeddings.value).toBe('0');
     fireEvent.change(embeddings, { target: { value: '100' } });
-    fireEvent.change(screen.getByLabelText('Cached input tokens / page'), { target: { value: '0' } });
+    fireEvent.change(screen.getByLabelText('Cached input tokens / page'), { target: { value: '100' } });
     fireEvent.click(screen.getByRole('button', { name: 'Reset token estimates' }));
     expect(embeddings.value).toBe('0');
-    expect((screen.getByLabelText('Cached input tokens / page') as HTMLInputElement).value).toBe(String(measured.cached_input));
+    expect((screen.getByLabelText('Cached input tokens / page') as HTMLInputElement).value).toBe('0');
+    expect(within(breakdown().getByText('Model cached input').closest('div')!).getByText('$0')).toBeTruthy();
   });
 
   it('preserves custom pricing overrides for a model and deployment', () => {
@@ -107,7 +108,7 @@ describe('Pricing calculator UI', () => {
     expect((screen.getByLabelText('Output tokens / page') as HTMLInputElement).value)
       .toBe(String(measurement.perPage!.output));
     expect((screen.getByLabelText('Cached input tokens / page') as HTMLInputElement).value)
-      .toBe(String(measurement.perPage!.cached_input ?? 0));
+      .toBe('0');
     expect((screen.getByLabelText('Embedding tokens / page') as HTMLInputElement).value).toBe('0');
     expect(screen.queryByText(/Token defaults are heuristic/)).toBeNull();
   });
@@ -173,35 +174,35 @@ describe('Pricing calculator UI', () => {
   it('adds document tier volumes and uses the sum for default field extraction', () => {
     render(<PricingCalculator />);
     expect((screen.getByLabelText('Monthly content extraction volume') as HTMLInputElement).readOnly).toBe(true);
-    fireEvent.change(screen.getByLabelText('Basic volume'), { target: { value: '3' } });
+    fireEvent.change(screen.getByLabelText('Basic volume'), { target: { value: '3000' } });
     expect(screen.queryByLabelText('Minimal volume')).toBeNull();
     expect(screen.getByText('Read')).toBeTruthy();
     expect(screen.getByText('Layout')).toBeTruthy();
-    expect((screen.getByLabelText('Monthly content extraction volume') as HTMLInputElement).value).toBe('4');
-    expect((screen.getByLabelText('Monthly field extraction volume') as HTMLInputElement).value).toBe('4');
+    expect((screen.getByLabelText('Monthly content extraction volume') as HTMLInputElement).value).toBe('4000');
+    expect((screen.getByLabelText('Monthly field extraction volume') as HTMLInputElement).value).toBe('4000');
     const row = breakdown().getByText('Content Extraction').closest('div')!;
     expect(within(row).getByText('$8')).toBeTruthy();
-    expect(screen.getByText(/Document file type, 4 x 1,000 pages of input/)).toBeTruthy();
+    expect(screen.getByText(/Document file type, 4,000 pages of input/)).toBeTruthy();
   });
 
   it('uses a separate field volume without charging content extraction twice', () => {
     render(<PricingCalculator />);
-    fireEvent.change(screen.getByLabelText('Monthly field extraction volume'), { target: { value: '0.5' } });
+    fireEvent.change(screen.getByLabelText('Monthly field extraction volume'), { target: { value: '500' } });
     expect(breakdown().getByText('$9.23')).toBeTruthy();
-    expect((screen.getByLabelText('Standard volume') as HTMLInputElement).value).toBe('1');
-    expect(screen.getByText(/Field extraction enabled for 0.5 x 1,000 pages/)).toBeTruthy();
+    expect((screen.getByLabelText('Standard volume') as HTMLInputElement).value).toBe('1000');
+    expect(screen.getByText(/Field extraction enabled for 500 pages/)).toBeTruthy();
   });
 
   it('rejects field volumes greater than content volumes', () => {
     render(<PricingCalculator />);
-    fireEvent.change(screen.getByLabelText('Monthly field extraction volume'), { target: { value: '2' } });
+    fireEvent.change(screen.getByLabelText('Monthly field extraction volume'), { target: { value: '2000' } });
     expect(screen.getByRole('alert').textContent).toContain('cannot exceed content extraction volume');
     const input = screen.getByLabelText('Monthly field extraction volume');
     expect(input.getAttribute('aria-invalid')).toBe('true');
     expect(input.getAttribute('aria-describedby')).toContain(screen.getByRole('alert').id);
     expect(input.closest('.calc-field')?.contains(screen.getByRole('alert'))).toBe(true);
     expect(screen.queryByText('Estimated Total Cost')).toBeNull();
-    fireEvent.change(input, { target: { value: '1' } });
+    fireEvent.change(input, { target: { value: '1000' } });
     expect(input.hasAttribute('aria-invalid')).toBe(false);
     expect(screen.queryByRole('alert')).toBeNull();
     expect(screen.getByText('Estimated Total Cost')).toBeTruthy();
@@ -219,7 +220,7 @@ describe('Pricing calculator UI', () => {
     persisted.set('calc-document-volumes-v1', { minimal: 2000, basic: 3000, standard: 1000 });
     render(<PricingCalculator />);
     expect(screen.queryByLabelText('Minimal volume')).toBeNull();
-    expect((screen.getByLabelText('Monthly content extraction volume') as HTMLInputElement).value).toBe('4');
+    expect((screen.getByLabelText('Monthly content extraction volume') as HTMLInputElement).value).toBe('4000');
     expect(screen.getByRole('status').textContent).toContain('Reallocate');
     expect(within(breakdown().getByText('Content Extraction').closest('div')!).getByText('$8')).toBeTruthy();
   });
@@ -235,13 +236,13 @@ describe('Pricing calculator UI', () => {
     persisted.set('calc-document-mode', 'basic');
     persisted.set('calc-quantity', 2500);
     render(<PricingCalculator />);
-    expect((screen.getByLabelText('Basic volume') as HTMLInputElement).value).toBe('2.5');
+    expect((screen.getByLabelText('Basic volume') as HTMLInputElement).value).toBe('2500');
     expect((screen.getByLabelText('Standard volume') as HTMLInputElement).value).toBe('0');
-    expect((screen.getByLabelText('Monthly content extraction volume') as HTMLInputElement).value).toBe('2.5');
+    expect((screen.getByLabelText('Monthly content extraction volume') as HTMLInputElement).value).toBe('2500');
   });
 
   it.each([
-    ['text', 'Text', '1', 'page'],
+    ['text', 'Text', '1000', 'page'],
     ['image', 'Image', '1', 'image'],
     ['audio', 'Audio', '60', 'minute'],
     ['video', 'Video', '60', 'minute']
@@ -263,7 +264,7 @@ describe('Pricing calculator UI', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Hide field extraction settings' }));
     expect(screen.queryByRole('combobox', { name: 'Model' })).toBeNull();
     expect(breakdown().getByText('$13.45')).toBeTruthy();
-    expect(screen.getByText(/Field extraction enabled for 1 x 1,000 pages/)).toBeTruthy();
+    expect(screen.getByText(/Field extraction enabled for 1,000 pages/)).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Show field extraction settings' }));
     expect(screen.getByRole('combobox', { name: 'Model' })).toBeTruthy();
   });
@@ -279,7 +280,7 @@ describe('Pricing calculator UI', () => {
 
   it('shows small token quantities precisely instead of rounding billable usage to zero', () => {
     render(<PricingCalculator />);
-    fireEvent.change(screen.getByLabelText('Monthly field extraction volume'), { target: { value: '0.001' } });
+    fireEvent.change(screen.getByLabelText('Monthly field extraction volume'), { target: { value: '1' } });
     expect(screen.getByText('0.0026')).toBeTruthy();
     expect(screen.getByText('0.00009')).toBeTruthy();
     expect(screen.queryByRole('alert')).toBeNull();
@@ -287,19 +288,19 @@ describe('Pricing calculator UI', () => {
 
   it('restores asynchronous tier allocations after switching to sync and back', () => {
     render(<PricingCalculator />);
-    fireEvent.change(screen.getByLabelText('Basic volume'), { target: { value: '2' } });
+    fireEvent.change(screen.getByLabelText('Basic volume'), { target: { value: '2000' } });
     fireEvent.keyDown(screen.getByLabelText('Processing mode'), { key: ' ' });
     expect(screen.getAllByRole('option').map(option => option.textContent)).toEqual(['Async', 'Sync']);
     fireEvent.click(screen.getByRole('option', { name: 'Sync' }));
     expect(screen.getByRole('switch', { name: 'Enable field extraction' }).getAttribute('aria-checked')).toBe('false');
-    expect((screen.getByLabelText('Basic volume') as HTMLInputElement).value).toBe('2');
-    expect((screen.getByLabelText('Standard volume') as HTMLInputElement).value).toBe('1');
+    expect((screen.getByLabelText('Basic volume') as HTMLInputElement).value).toBe('2000');
+    expect((screen.getByLabelText('Standard volume') as HTMLInputElement).value).toBe('1000');
     expect(breakdown().getByText('$10.50')).toBeTruthy();
-    expect((screen.getByLabelText('Monthly content extraction volume') as HTMLInputElement).value).toBe('3');
+    expect((screen.getByLabelText('Monthly content extraction volume') as HTMLInputElement).value).toBe('3000');
     fireEvent.keyDown(screen.getByLabelText('Processing mode'), { key: ' ' });
     fireEvent.click(screen.getByRole('option', { name: 'Async' }));
-    expect((screen.getByLabelText('Basic volume') as HTMLInputElement).value).toBe('2');
-    expect((screen.getByLabelText('Standard volume') as HTMLInputElement).value).toBe('1');
+    expect((screen.getByLabelText('Basic volume') as HTMLInputElement).value).toBe('2000');
+    expect((screen.getByLabelText('Standard volume') as HTMLInputElement).value).toBe('1000');
     expect(screen.getByRole('switch', { name: 'Enable field extraction' }).getAttribute('aria-checked')).toBe('true');
   });
 
@@ -307,12 +308,12 @@ describe('Pricing calculator UI', () => {
     render(<PricingCalculator />);
     fireEvent.keyDown(screen.getByLabelText('Processing mode'), { key: ' ' });
     fireEvent.click(screen.getByRole('option', { name: 'Sync' }));
-    fireEvent.change(screen.getByLabelText('Basic volume'), { target: { value: '2' } });
-    fireEvent.change(screen.getByLabelText('Standard volume'), { target: { value: '3' } });
+    fireEvent.change(screen.getByLabelText('Basic volume'), { target: { value: '2000' } });
+    fireEvent.change(screen.getByLabelText('Standard volume'), { target: { value: '3000' } });
     expect(breakdown().getByText('$25.50')).toBeTruthy();
-    expect((screen.getByLabelText('Monthly content extraction volume') as HTMLInputElement).value).toBe('5');
+    expect((screen.getByLabelText('Monthly content extraction volume') as HTMLInputElement).value).toBe('5000');
     expect(JSON.parse(localStorage.getItem('cu-pricing:calc-processing-mode')!)).toBe('sync');
-    expect(screen.getByText(/Sync processing: 2 x 1,000 Basic/)).toBeTruthy();
+    expect(screen.getByText(/Sync processing: 2,000 Basic/)).toBeTruthy();
   });
 
   it('retains a disabled field extraction preference across processing-mode changes', () => {
@@ -323,5 +324,77 @@ describe('Pricing calculator UI', () => {
     fireEvent.keyDown(screen.getByLabelText('Processing mode'), { key: ' ' });
     fireEvent.click(screen.getByRole('option', { name: 'Async' }));
     expect(screen.getByRole('switch', { name: 'Enable field extraction' }).getAttribute('aria-checked')).toBe('false');
+  });
+
+  it('defaults measured models to uncached billing while allowing explicit cache estimates', () => {
+    persisted.set('calc-model', 'gpt-4.1');
+    render(<PricingCalculator />);
+    const input = invoiceBenchmark.models['gpt-4.1'].perPage!.input;
+    const inputCost = input * 1000 / 1000000 * pricingConfig.models.find(model => model.name === 'gpt-4.1')!.pricing.global.input_per_mtok!;
+    const row = breakdown().getByText('Model uncached input').closest('div')!;
+    expect(Number(row.querySelector('dd')!.textContent!.replace('$', ''))).toBeCloseTo(inputCost, 4);
+    fireEvent.change(screen.getByLabelText('Cached input tokens / page'), { target: { value: '1000' } });
+    expect((screen.getByLabelText('Cached input tokens / page') as HTMLInputElement).value).toBe('1000');
+    expect(within(breakdown().getByText('Model cached input').closest('div')!).getByText('$0.5')).toBeTruthy();
+  });
+
+  it('links directly to pricing pages instead of the Azure calculator', () => {
+    render(<PricingCalculator />);
+    expect(screen.getByRole('link', { name: 'Content Understanding pricing page' }).getAttribute('href'))
+      .toBe('https://azure.microsoft.com/en-us/pricing/details/content-understanding/');
+    expect(screen.getByRole('link', { name: 'Azure OpenAI pricing page' }).getAttribute('href'))
+      .toBe('https://azure.microsoft.com/en-us/pricing/details/azure-openai/');
+    expect(screen.getAllByRole('link').some(link => link.getAttribute('href')?.includes('/pricing/calculator/'))).toBe(false);
+  });
+
+  it('limits Sync file types to Document and Text and restores all types in Async', () => {
+    render(<PricingCalculator />);
+    fireEvent.keyDown(screen.getByLabelText('Processing mode'), { key: ' ' });
+    fireEvent.click(screen.getByRole('option', { name: 'Sync' }));
+    fireEvent.keyDown(screen.getByLabelText('File type'), { key: ' ' });
+    expect(screen.getAllByRole('option').map(option => option.textContent)).toEqual(['Document', 'Text']);
+    fireEvent.click(screen.getByRole('option', { name: 'Text' }));
+    expect(screen.getByLabelText('Processing mode').textContent).toBe('Sync');
+    expect(screen.getByRole('switch', { name: 'Enable field extraction' }).hasAttribute('disabled')).toBe(true);
+    expect(screen.queryByLabelText('Model')).toBeNull();
+    expect(breakdown().getByText('$0.00')).toBeTruthy();
+    fireEvent.keyDown(screen.getByLabelText('Processing mode'), { key: ' ' });
+    fireEvent.click(screen.getByRole('option', { name: 'Async' }));
+    expect(screen.getByRole('switch', { name: 'Enable field extraction' }).getAttribute('aria-checked')).toBe('true');
+    fireEvent.keyDown(screen.getByLabelText('File type'), { key: ' ' });
+    expect(screen.getAllByRole('option').map(option => option.textContent)).toEqual(['Document', 'Text', 'Image', 'Audio', 'Video']);
+  });
+
+  it.each(['image', 'audio', 'video'])('keeps %s in Async and disables Sync even with stale saved settings', fileType => {
+    persisted.set('calc-file-type', fileType);
+    persisted.set('calc-processing-mode', 'sync');
+    render(<PricingCalculator />);
+    expect(screen.getByLabelText('Processing mode').textContent).toBe('Async');
+    expect(screen.queryByRole('alert')).toBeNull();
+    fireEvent.keyDown(screen.getByLabelText('Processing mode'), { key: ' ' });
+    expect(screen.getByRole('option', { name: 'Sync' }).getAttribute('aria-disabled')).toBe('true');
+  });
+
+  it('defaults document content and field volumes to 1,000 actual pages', () => {
+    render(<PricingCalculator />);
+    expect((screen.getByLabelText('Monthly content extraction volume') as HTMLInputElement).value).toBe('1000');
+    expect((screen.getByLabelText('Standard volume') as HTMLInputElement).value).toBe('1000');
+    expect((screen.getByLabelText('Monthly field extraction volume') as HTMLInputElement).value).toBe('1000');
+    expect(screen.getByLabelText('Monthly field extraction volume').getAttribute('max')).toBe('1000');
+    expect(document.getElementById('volume-standard-unit')!.textContent).toBe('pages');
+    expect(screen.queryByText('x 1,000 pages')).toBeNull();
+    expect(within(breakdown().getByText('Content Extraction').closest('div')!).getByText('$5')).toBeTruthy();
+  });
+
+  it('converts actual text pages into characters without multiplying model tokens by 1,000', () => {
+    render(<PricingCalculator />);
+    fireEvent.keyDown(screen.getByLabelText('File type'), { key: ' ' });
+    fireEvent.click(screen.getByRole('option', { name: 'Text' }));
+    fireEvent.change(screen.getByLabelText('Monthly content extraction volume'), { target: { value: '500' } });
+    expect(JSON.parse(localStorage.getItem('cu-pricing:calc-quantity')!)).toBe(1500000);
+    expect((screen.getByLabelText('Monthly field extraction volume') as HTMLInputElement).value).toBe('500');
+    expect(within(breakdown().getByText('Model uncached input').closest('div')!).getByText('$3.25')).toBeTruthy();
+    expect(within(breakdown().getByText('Contextualization (standard)').closest('div')!).getByText('$1.5')).toBeTruthy();
+    expect(screen.getByText(/Text file type, 500 pages of input/)).toBeTruthy();
   });
 });
