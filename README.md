@@ -1,5 +1,7 @@
 # Content Understanding pricing calculator
 
+## [Open the live pricing calculator](https://jfilcik.github.io/CU-Pricing-Calc/)
+
 A web calculator and Python estimator for Azure Content Understanding. Document Intelligence pricing is out of scope.
 
 For current rates, rely directly on the [Azure Content Understanding pricing page](https://azure.microsoft.com/en-us/pricing/details/content-understanding/) and [Azure OpenAI pricing page](https://azure.microsoft.com/en-us/pricing/details/azure-openai/), rather than this calculator's saved pricing snapshot. For how charges are calculated, see [Pricing for Azure Content Understanding in Foundry Tools](https://learn.microsoft.com/en-us/azure/ai-services/content-understanding/pricing-explainer).
