@@ -226,7 +226,7 @@ python tools\cost_estimator.py estimate --file-type document --quantity 1000 --s
 python tools\cost_estimator.py estimate-usage --file-type audio --quantity 60 --input-tokens 0 --output-tokens 0
 
 # Batch results, optionally with custom model configuration
-python tools\cost_estimator.py analyze --results-file example_batch_results.json
+python tools\cost_estimator.py analyze --results-file tools\examples\example_batch_results.json
 ```
 
 Both `estimate` and `estimate-usage` accept `--document-tier`,

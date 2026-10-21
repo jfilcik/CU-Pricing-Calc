@@ -2,18 +2,19 @@
 """
 Example usage of the Content Understanding Cost Estimator
 
-This script demonstrates various ways to use the cu_cost_estimator.py tool
+This script demonstrates various ways to use the cost estimator.
 """
 
 import subprocess
 import json
+import sys
 from pathlib import Path
 
 
 def run_estimator(args):
     """Helper to run the estimator and return output"""
-    cmd = ["python3", "cu_cost_estimator.py"] + args
-    result = subprocess.run(cmd, capture_output=True, text=True)
+    cmd = [sys.executable, str(Path(__file__).resolve().parents[1] / "cost_estimator.py")] + args
+    result = subprocess.run(cmd, capture_output=True, text=True, check=True)
     return result.stdout
 
 
@@ -116,13 +117,14 @@ def example_5_batch_analysis():
     print_section("Example 5: Batch Processing Analysis")
     
     # Check if example file exists
-    if not Path("example_batch_results.json").exists():
+    results_file = Path(__file__).with_name("example_batch_results.json")
+    if not results_file.exists():
         print("⚠️  example_batch_results.json not found. Skipping this example.")
         return
     
     output = run_estimator([
         "analyze",
-        "--results-file", "example_batch_results.json"
+        "--results-file", str(results_file)
     ])
     print(output)
 

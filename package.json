@@ -4,14 +4,14 @@
     "version": "0.0.0",
     "type": "module",
     "scripts": {
-        "dev": "vite",
+        "dev": "vite --config config/vite.config.ts",
         "kill": "fuser -k 5000/tcp",
-        "build": "tsc --noEmit && vite build",
+        "build": "tsc --noEmit && vite build --config config/vite.config.ts",
         "lint": "eslint .",
-        "test": "vitest run",
+        "test": "vitest run --config config/vitest.config.ts",
         "typecheck": "tsc --noEmit",
-        "optimize": "vite optimize",
-        "preview": "vite preview"
+        "optimize": "vite optimize --config config/vite.config.ts",
+        "preview": "vite preview --config config/vite.config.ts"
     },
     "dependencies": {
         "@github/spark": "^0.39.0",

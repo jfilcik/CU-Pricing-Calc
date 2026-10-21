@@ -4,7 +4,7 @@ import fs from "fs";
 
 let theme = {};
 try {
-  const themePath = "./theme.json";
+  const themePath = new URL("./theme.json", import.meta.url);
 
   if (fs.existsSync(themePath)) {
     theme = JSON.parse(fs.readFileSync(themePath, "utf-8"));

@@ -151,8 +151,12 @@ See [tools/README.md](tools/README.md) for usage-based and schema-based estimati
 ```powershell
 python -m tools.cost_estimator --help
 python -m pytest -q tools\tests
-python examples.py
+python tools\examples\examples.py
 ```
+
+## Repository layout
+
+Application code lives in `src/`, build and styling configuration in `config/`, Python utilities and sample data in `tools/`, and the design specification in [docs/PRD.md](docs/PRD.md). Deployment workflows and the [security policy](.github/SECURITY.md) live in `.github/`.
 
 ## License
 
